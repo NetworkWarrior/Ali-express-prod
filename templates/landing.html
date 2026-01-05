@@ -1,0 +1,73 @@
+{%extends 'base.html'%}
+{%block title%}landing page{%endblock%}
+
+{%block content%}
+<head>
+    <style>
+        .landing-box{
+            height: 696px;
+            width: 641px;
+            border-radius: 10px;
+            border: 1px solid black;
+            margin-bottom: 10px;
+
+        }
+        .landing-container {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          height: 100vh;
+        }
+        a {
+            text-decoration: none;
+            color: black;
+        }
+        .landing-video {
+          border-bottom-left-radius: 10px;
+          border-bottom-right-radius: 10px;
+          width: 640px;
+          height: 460px;;
+        }
+    </style>
+</head>
+<body>
+
+<div class="landing-container">
+    <div>
+        {% for new in news %}
+            {%if new.should_displayed%}
+               <div class="landing-box" style="text-align: center">
+                   <a href="{%url 'products:product_detail' new.product.id%}">
+                       <div class="my-2" style="height:220px; justify-content:center; align-items:center;">
+                            <img class="mt-2" style="width:60px; height:50px; border-radius:40%" src="{{new.company.icon.url}}">
+                            <div class="my-2" style="font-weight: 800; background-color: black; border-radius:5px; margin:0 140px; border: 1px solid;">
+                                <h2 style="color: white">
+                                    {{new.product.name}}
+                                </h2>
+                            </div>
+                            <p>
+                                Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.
+                            </p>
+                            <h5 style="color:lightgrey;">{{new.discount}}% off</h5>
+                             <p style="color:lightgrey;">
+                              {{new.should_be_deleted}}
+                            </p>
+                        </div>
+                   </a>
+
+                <video class="landing-video" controls>
+                        <source src="{{ new.video.url }}" type="video/mp4">
+                        Your browser does not support the video tag.
+                </video>
+
+            </div>
+
+
+            {%endif%}
+        {% endfor %}
+    </div>
+</div>
+
+
+</body>
+{%endblock%}

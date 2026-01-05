@@ -1,0 +1,44 @@
+{%extends 'base.html'%}
+{%block title%}products list{%endblock%}
+{%block content%}
+
+<body>
+    {%if products%}
+        <ul>
+            {% for product in products %}
+                {%if not product.local%}
+                  <li class="ms-2" style="display: inline-block;">
+                      <a style="text-decoration: none;" href="{% url 'products:product_detail' product.id %}">
+                          <div class="product-list-frame mt-3">
+                              <div style="display: flex; flex-direction: column; height: 100%;">
+                                <div style="flex: 2" class="mb-1">
+                                  {% if product.productpicture_set.exists %}
+                                    <img class="ui-rect ui-bg-cover " style="background-image: url('{{ product.productpicture_set.first.get_image.url }}'); border-radius:5px;">
+                                  {% endif %}
+                                </div>
+                                <div style="flex: 1">
+                                  <h2 class="product-elements " style="font-family: 'Pacifico', cursive;"><span style="font-size: 24px; font-family: 'Pacifico', cursive;">{{ product.get_int_decimal}}</span>,{{product.get_decimal_price}} <span class="ms-1" style="font-size: 24px; font-family: 'Pacifico', cursive;">zł</span></h2>
+                                    {{ product.name }}
+                                    <hr>
+                                    <p style="color: green; font-size: 12px">
+                                        {%if request.user.is_in_eu%}
+                                            Free {{product.europe_delivery}}-day delivery·Free return
+                                        {%else%}
+                                            {{product.europe_out_delivery}}-day delivery·Free return
+                                        {%endif%}
+                                    </p>
+                                </div>
+                              </div>
+                          </div>
+                      </a>
+                  </li>
+                {%endif%}
+            {% endfor %}
+        </ul>
+    {%else%}
+        <p>no products found!</p>
+    {%endif%}
+
+</body>
+
+{%endblock%}

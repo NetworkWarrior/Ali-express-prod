@@ -1,0 +1,70 @@
+.product-detail-frame{
+  padding: 10px;
+  width: 400;
+  height: 550px;
+  border-radius: 10px;
+  border: 1px solid;
+  border-color: lightgrey;
+  position: fixed;
+  top: 80;
+  right: 20;
+  width: 25%;
+}
+
+.product-picture-frame{
+  padding: 1px;
+  width: 70px;
+  height: 70px;
+  border-radius: 10px;
+  position: relative;
+  display: inline-block;
+}
+
+.product-detail-frame .links {
+    position: absolute;
+    bottom: 0;
+  }
+.cosmos-btn {
+    padding-top: 4px;
+    padding-bottom: 4px;
+    background: rgb(253, 56, 79);
+    color: #fff;
+    border-width: 0;
+}
+.div-size{
+    height: 240px;
+}
+.static-frame {
+   position: fixed;
+   top: 100;
+   right: 20px;
+   width: 25%;
+}
+
+.grid-page {
+  display: grid;
+  grid-template-columns: 5fr 2fr;
+}
+
+.review-box {
+  padding: 10px; /* Add some padding inside the box */
+  margin-bottom: 10px; /* Add some margin between each box */
+  margin-left: 10px;
+  background-color: #f9f9f9; /* Add a background color to the box */
+  border-radius: 5px;
+}
+
+.review-box:hover{
+    border: 1px solid black; /* Set border style, width, and color */
+}
+
+.review-user-picture{
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+}
+.grid-review-box {
+  display: grid;
+  grid-template-columns: 1fr 10fr;
+}
+

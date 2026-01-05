@@ -1,0 +1,131 @@
+{%extends 'base.html' %}
+{% load crispy_forms_tags %}
+{%load static%}
+{%block content%}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+   <link href="{%static 'css/main.css'%}" rel="stylesheet" type="text/css">
+    <link href="{%static 'css/product.css'%}" rel="stylesheet" type="text/css">
+    <meta charset="UTF-8">
+    <title>{{topic.name}} Support</title>
+    <style>
+    .qna-box{
+        border-radius: 10px;
+        background-color: white;
+        margin-top: 10px;
+        width: 800px;
+        border-radius: 5px;
+        position: relative; /* Add this */
+        border: 1px solid black;
+    }
+    .qna-box:hover{
+        box-shadow: 5px 5px 10px #ccc;
+    }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div>
+        <p><h2 >Welcome To {{topic.name}} Support Department</h2> <h6>How can we help you ?</h6></p>
+        {%if not request.user.operator_set.exists%}
+        <div>
+            <ul class="navbar-nav my-3">
+                <li class="nav-item dropdown">
+                  <a class="btn btn-success " href="#" role="button" data-bs-toggle="dropdown">
+                    Add Question
+                  </a>
+                  <ul class="dropdown-menu">
+                    <li>
+                        <form method="POST"  enctype="multipart/form-data" class="mx-3" style="width: 250px">
+                          {% csrf_token %}
+                          {{form | crispy}}
+                          <button type="submit" class="cosmos-btn cosmos-btn-large cosmos-btn-block " data-spm-anchor-id="a2g0o.best.0.i21.40a52c25kXePgB"><span><b>SUBMIT</b></span></button>
+                        </form>
+                    </li>
+                  </ul>
+                </li>
+            </ul>
+        </div>
+        {%endif%}
+    </div>
+    <hr>
+    {%for question in topic.question_set.all%}
+        <div class="my-5">
+            <img class="review-user-picture" style="display:inline-block;" src="{{question.user.picture.url}}"> <h5 style="display:inline-block;">@{{question.user.username}}</h5>
+            <div class="qna-box">
+                <h6 class="mx-3 my-2">{{question.title}}</h6>
+                <p class="mx-3 my-2">
+                   {{question.description}}
+                </p>
+                {%if question.picture%}
+                    <hr>
+                    <div style="width: 250px; height: 250px;" class="ms-3">
+                        <img class="ui-rect ui-bg-cover rounded-left" style="border-radius:5px; background-image: url('{{ question.picture.url }}');">
+                    </div>
+                {%endif%}
+                <hr>
+
+                {%if question.answer_set.exists%}
+                    <ul class="navbar-nav ms-3">
+                        <li class="nav-item dropdown">
+                          <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                              {{question.answer_set.count}} SOLUTION{%if not question.answer_set.count == 1%}S{%endif%}
+                          </a>
+                          <ul class="dropdown-menu">
+                            <li >
+                                {%for answer in question.answer_set.all%}
+                                    <div class="mx-2 my-2">
+                                      <img class="review-user-picture" src="{{answer.operator.user.picture.url}}">
+                                        <b>{{answer.operator.full_name}}</b>
+                                        ({{answer.operator.position}})
+                                    </div>
+
+                                      <p class="mx-3">
+                                        {{answer.description}}
+                                      </p>
+                                      <hr>
+                                {%endfor%}
+                            </li>
+                          </ul>
+                        </li>
+                    </ul>
+                {%else%}
+                    <a class="mx-3 my-3 nav-link" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        NO ANSWERS YET
+                      </a>
+                {%endif%}
+
+
+                {%if request.user.operator_set.exists%}
+                    <ul class="navbar-nav ms-3 my-2">
+                    <li class="nav-item dropdown">
+                      <a class="btn btn-success " href="#" role="button" data-bs-toggle="dropdown">
+                        ANSWER
+                      </a>
+                      <ul class="dropdown-menu">
+                        <li>
+                            <form method="POST" class="mx-3" style="width: 250px" action="{% url 'help:help-answer-detail' question.id %}">
+                              {% csrf_token %}
+                              {{answer_form | crispy}}
+                              <button type="submit" class="cosmos-btn cosmos-btn-large cosmos-btn-block " data-spm-anchor-id="a2g0o.best.0.i21.40a52c25kXePgB"><span><b>SUBMIT</b></span></button>
+                            </form>
+                        </li>
+                      </ul>
+                    </li>
+                </ul>
+                {%endif%}
+            </div>
+
+        </div>
+
+    {%endfor%}
+
+
+</div>
+
+
+
+</body>
+</html>
+{%endblock%}

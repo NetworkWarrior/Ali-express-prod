@@ -1,0 +1,114 @@
+{%extends 'base.html'%}
+{% load crispy_forms_tags %}
+{%block content%}
+<head>
+   <style>
+    .local-box{
+        height: 300px;
+        width: 600px;
+        border-radius: 10px;
+        background-color: white;
+        margin-top: 20px;
+        border-radius: 10px;
+        display: inline-block;
+        position: relative; /* Add this */
+    }
+    .rounded-left {
+        border-top-left-radius: 10px;
+        border-bottom-left-radius: 10px;
+    }
+    .local-box:hover{
+        box-shadow: 5px 5px 10px #ccc;
+    }
+    .landing-container {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+    .grid-local-container {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+    }
+    a {
+        text-decoration: none;
+    }
+    .created-at {
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        font-size: 10px;
+        color: lightgrey;
+        margin: 0 10px 10px 0; /* Add some margin */
+    }
+    .product-name{
+        position: absolute;
+        top: 0;
+        right: 0;
+        font-size: 14px;
+        color: lightgrey;
+        margin: 0 10px 10px 0; /* Add some margin */
+    }
+</style>
+
+{% if products %}
+    <ul>
+        {% for product in products %}
+            {% if product.local %}
+            <div style="inline-block">
+                <a href="{% url 'products:product_detail' product.id %}" class="product-link" data-id="{{ product.id }}">
+                    <div class="local-box grid-local-container">
+                        <div class="grid-item">
+                            {% if product.productpicture_set.exists %}
+                                <img class="ui-rect ui-bg-cover rounded-left" style="background-image: url('{{ product.get_first_picture }}');">
+                            {% endif %}
+                        </div>
+                        <div class="grid-item landing-container">
+                            <img class="review-user-picture mt-2" src="{{product.user.picture.url}}">
+                            <h5>@{{product.user.username}}</h5>
+                            <b style="font-size:12px; color: green">{{product.email}}</b>
+
+                            <hr>
+                            <div>
+                                <h2 class="product-elements" style="font-family: 'Pacifico', cursive;">
+                                    <span style="font-size: 24px; font-family: 'Pacifico', cursive;">{{ product.get_int_decimal}}</span>,{{product.get_decimal_price}} <span class="ms-1" style="font-size: 24px; font-family: 'Pacifico', cursive;">zł</span>
+                                </h2>
+                                <div class="mt=2">
+                                    {% if product.user == request.user %}
+                                    <form method="post" action="{% url 'products:product_delete' product.id %}" style="display:inline;">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                                    </form>
+                                    {% endif %}
+                                </div>
+                                <h5 class="product-name">{{product.name}}</h5>
+                                <p class="created-at">{{ product.created_at | timesince}} ago</p>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+
+            {% endif %}
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>no products found!</p>
+    </div>
+{% endif %}
+
+<hr>
+<div class="grid-container grid-item-style grid-container-style mt-5">
+  <div class="grid-item"></div>
+  <div class="grid-item">
+    <div class="mb-4">
+        <h3 class="float-left">Sell on Global-Bazzar</h3>
+    </div>
+    <form method="post" enctype="multipart/form-data">{%csrf_token%}
+        {{form | crispy}}
+        <button type="submit" class="cosmos-btn-primary cosmos-btn-large cosmos-btn-block " data-spm-anchor-id="a2g0o.best.0.i21.40a52c25kXePgB"><span><b>Add Product</b></span></button>
+    </form>
+  </div>
+  <div class="grid-item"></div>
+</div>
+
+{%endblock%}
