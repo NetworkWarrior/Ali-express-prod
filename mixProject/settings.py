@@ -121,7 +121,12 @@ AUTH_USER_MODEL = "accounts.CustomUser"
 # MEDIA FILES
 # -------------------------
 MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media-files')
+
+# Use Render persistent disk in production, local folder otherwise
+if os.environ.get('RENDER') == 'TRUE':
+    MEDIA_ROOT = '/media/'  # Persistent disk path on Render
+else:
+    MEDIA_ROOT = os.path.join(BASE_DIR, 'media-files')
 
 # -------------------------
 # STATIC FILES
@@ -129,6 +134,7 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media-files')
 STATIC_URL = 'static/'
 STATICFILES_DIRS = [BASE_DIR / 'static']
 STATIC_ROOT = BASE_DIR / "staticfiles"
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # -------------------------
 # DEFAULT PK FIELD
@@ -145,14 +151,9 @@ EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
 EMAIL_PORT = int(os.environ.get('EMAIL_PORT', 587))
 EMAIL_USE_TLS = os.environ.get('EMAIL_USE_TLS', 'True') == 'True'
 EMAIL_USE_SSL = os.environ.get('EMAIL_USE_SSL', 'False') == 'True'
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # -------------------------
 # STRIPE KEYS
 # -------------------------
 STRIPE_PUBLIC_KEY = os.environ.get("STRIPE_PUBLIC_KEY")
 STRIPE_SECRET_KEY = os.environ.get("STRIPE_SECRET_KEY")
-
-
-
-
