@@ -22,5 +22,7 @@ tzdata==2025.3
 urllib3==2.6.2
 whitenoise==6.11.0
 django-environ>=0.10.0
+dj-database-url==1.1.0
+
 
 
