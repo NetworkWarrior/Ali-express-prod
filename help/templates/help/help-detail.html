@@ -80,7 +80,12 @@
                             <li >
                                 {%for answer in question.answer_set.all%}
                                     <div class="mx-2 my-2">
-                                      <img class="review-user-picture" src="{{answer.operator.user.picture.url}}">
+                                       {% if answer.operator.user.picture %}
+                                           <img class="review-user-picture" src="{{ answer.operator.user.picture.url }}">
+                                       {% else %}
+                                           <img class="review-user-picture" src="{% static 'images/default_user.jpg' %}">
+                                       {% endif %}
+
                                         <b>{{answer.operator.full_name}}</b>
                                         ({{answer.operator.position}})
                                     </div>
@@ -134,3 +139,4 @@
 </html>
 
 {%endblock%}
+
