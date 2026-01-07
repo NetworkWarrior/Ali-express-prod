@@ -48,17 +48,14 @@
                             <p>
                                 Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.
                             </p>
-                            <h5 style="color:lightgrey;">{{new.discount}}% off</h5>
+                            <h5 style="color:grey;">{{new.discount}}% off</h5>
                              <p style="color:lightgrey;">
                               {{new.should_be_deleted}}
                             </p>
                         </div>
                    </a>
 
-                <video class="landing-video" controls>
-                        <source src="{{ new.video.url }}" type="video/mp4">
-                        Your browser does not support the video tag.
-                </video>
+                <img class="landing-video" src="{{ new.video.url }}" alt="Company News Image">
 
             </div>
 
@@ -70,4 +67,5 @@
 
 
 </body>
+
 {%endblock%}
