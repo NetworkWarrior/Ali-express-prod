@@ -3,10 +3,7 @@ from decimal import Decimal
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
 from django.utils import timezone
-
 from accounts.models import CustomUser
-# Create your models here.
-
 
 class Category(models.Model):
     type = models.CharField(max_length=100, blank=True)
@@ -43,30 +40,24 @@ class Product(models.Model):
 
     def average_rating(self):
         reviews = self.productreview_set.all()
-        if reviews.count() > 0:
+        if reviews.exists():
             total_stars = sum(review.stars_given for review in reviews)
             average_stars = total_stars / reviews.count()
             return format(average_stars, '.1f')
-        else:
-            return 0.0
+        return 0.0
 
     def __str__(self):
         return self.name
 
     def get_int_decimal(self):
-        price_decimal = Decimal(str(self.price))
-        price_integer = int(price_decimal)
-        return price_integer
+        return int(Decimal(str(self.price)))
 
     def delivery_price(self):
-        price_decimal = Decimal(str(self.price))
-        delivery_price = price_decimal / 10
-        return "{:.2f}".format(delivery_price)
+        return "{:.2f}".format(Decimal(str(self.price)) / 10)
 
     def get_decimal_price(self):
         price_decimal = Decimal(str(self.price))
-        price_decimal_part = (price_decimal % 1) * 100  # multiply by 100 to get the integer part
-        decimal_integer = int(price_decimal_part)
+        decimal_integer = int((price_decimal % 1) * 100)
         return decimal_integer
 
     def sell(self):
@@ -76,8 +67,7 @@ class Product(models.Model):
     def save(self, *args, **kwargs):
         if not self.email and self.user:
             self.email = self.user.email
-        super(Product, self).save(*args, **kwargs)
-
+        super().save(*args, **kwargs)
 
     def get_first_picture(self):
         first_picture = self.productpicture_set.order_by('id').first()
@@ -89,14 +79,8 @@ class Product(models.Model):
         next_picture = self.productpicture_set.filter(order__gt=current_picture.order).order_by('order').first()
         if next_picture:
             return next_picture.picture.url
-        else:
-            return None
+        return None
 
-    def get_first_picture(self):
-        try:
-            return self.productpicture_set.first().picture.url
-        except AttributeError:
-            return None
 
 class ProductPicture(models.Model):
     picture = models.ImageField(default='product_image.png')
@@ -107,8 +91,7 @@ class ProductPicture(models.Model):
         return self.picture
 
     def __str__(self):
-        return self.product.name
-
+        return self.product.name if self.product else "No Product"
 
 
 class ProductReview(models.Model):
@@ -129,43 +112,38 @@ class CompanyNews(models.Model):
     description = models.TextField(max_length=400)
     company = models.ForeignKey(Company, on_delete=models.CASCADE)
     video = models.FileField(upload_to='videos/')
-    product = models.OneToOneField(Product, on_delete=models.CASCADE, blank=True)
+    product = models.OneToOneField(Product, on_delete=models.CASCADE, blank=True, null=True)
     created_at = models.DateTimeField(default=timezone.now, blank=True)
     deleted_in = models.IntegerField(default=7, blank=True)
-    discount = models.IntegerField(blank=True)
+    discount = models.IntegerField(blank=True, null=True)
 
     class Meta:
         ordering = ['-created_at']
 
     def days_since_created(self):
-        now = datetime.now(timezone.utc)
-        delta = now - self.created_at
+        created = self.created_at
+        if timezone.is_naive(created):
+            created = timezone.make_aware(created, timezone.get_default_timezone())
+        delta = timezone.now() - created
         return delta.days
 
     def discount_price(self):
-        if self.should_displayed:
-            if self.discount:
-                price = self.product.price - ((self.product.price * self.discount)/100)
-                price = "{:.2f}".format(price)
-                return price
+        if self.should_displayed() and self.product and self.discount:
+            price = self.product.price - ((self.product.price * self.discount) / 100)
+            return "{:.2f}".format(price)
+        return None
 
     def should_be_deleted(self):
-        if self.days_since_created() < self.deleted_in:
-            days = self.deleted_in - self.days_since_created()
-            if days > 1:
-                ready = f"{days} days to be expired"
-            else:
-                ready = f"last-day to be expired"
-            return ready
+        days_left = self.deleted_in - self.days_since_created()
+        if days_left > 1:
+            return f"{days_left} days to be expired"
+        elif days_left == 1:
+            return "last-day to be expired"
+        return "expired"
 
     def should_displayed(self):
-        if self.days_since_created() > self.deleted_in:
-            return False
-        else:
-            return True
+        return self.days_since_created() <= self.deleted_in
 
     def __str__(self):
-        return f"news for {self.product.name} by {self.company}"
-
-
-
+        product_name = self.product.name if self.product else "No Product"
+        return f"news for {product_name} by {self.company}"
