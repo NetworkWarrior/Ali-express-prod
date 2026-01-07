@@ -52,7 +52,11 @@
     <hr>
     {%for question in topic.question_set.all%}
         <div class="my-5">
-            <img class="review-user-picture" style="display:inline-block;" src="{{question.user.picture.url}}"> <h5 style="display:inline-block;">@{{question.user.username}}</h5>
+            {% if question.user.picture %}
+                <img class="review-user-picture" style="display:inline-block;" src="{{ question.user.picture.url }}">
+            {% else %}
+                <img class="review-user-picture" style="display:inline-block;" src="/static/images/default_user.jpg">
+            {% endif %}
             <div class="qna-box">
                 <h6 class="mx-3 my-2">{{question.title}}</h6>
                 <p class="mx-3 my-2">
@@ -128,4 +132,5 @@
 
 </body>
 </html>
+
 {%endblock%}
