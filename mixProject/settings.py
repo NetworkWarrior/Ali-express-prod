@@ -22,7 +22,7 @@ env = environ.Env(
 # SECURITY
 # -------------------------
 SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY")
-DEBUG = os.environ.get("DEBUG", "False") == "True"
+DEBUG = True
 ALLOWED_HOSTS = ['*']
 
 # -------------------------
@@ -157,3 +157,4 @@ EMAIL_USE_SSL = os.environ.get('EMAIL_USE_SSL', 'False') == 'True'
 # -------------------------
 STRIPE_PUBLIC_KEY = os.environ.get("STRIPE_PUBLIC_KEY")
 STRIPE_SECRET_KEY = os.environ.get("STRIPE_SECRET_KEY")
+
